@@ -1,0 +1,55 @@
+extends layout
+
+block content
+    h1= title
+    form.ajaxform(action='email-finder', method='GET')
+        input(type='hidden', name='api_key', value='42454f6cba9f2e595fe32b311d8de96fff5f50e2')
+        input(type='text', name='domain', value='asana.com' placeholder='Domain')
+        input(type='text', name='first_name', value='Dustin' placeholder='First Name')
+        input(type='text', name='last_name', value='Moskovitz' placeholder='Last Name')
+        input(type='submit', value='Submit')
+
+    p#email Email:
+    p#score Score:
+
+    table#location(border='1')
+        tr
+            th Domain
+            th URI
+            th Extracted on
+
+    script(type="text/javascript").
+        var service = 'https://api.hunter.io/v2/';
+        var ss = '/fetch/';
+        function logResults(json) {
+            console.log(json);
+        }
+        $(document).ready(function () {
+            jQuery.support.cors = true;
+            jQuery('.ajaxform').submit(function () {
+                $.ajax({
+                    url: ss + service + $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        console.log(response); // server response
+                        var data = response.data.data;
+                        var email = data.email || "not found";
+                        var score = data.score || "not found";
+                        var records = data.sources || [];
+                        $('#email').html(email);
+                        $('#score').html(score);
+                        var trHTML = '';
+                        $.each(records, function (i, item) {
+                            trHTML += '<tr>' +
+                                    '<td>' + item.domain + '</td>' +
+                                    '<td>' + item.extracted_on + '</td>' +
+                                    '<td>' + item.uri + '</td>' +
+                                    '</tr>';
+                        });
+                        $('#location tr').not('tr:first').remove();
+                        $('#location tr:first').after(trHTML);
+                    }
+                });
+                return false;
+            });
+        });
