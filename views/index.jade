@@ -3,7 +3,7 @@ extends layout
 block content
     h1= title
     form.ajaxform(action='email-finder', method='GET')
-        input(type='hidden', name='api_key', value='42454f6cba9f2e595fe32b311d8de96fff5f50e2')
+        input(type='hidden', name='api_key', value='8221dcc6783e149736df1c6448bdf1f114a844ee')
         input(type='text', name='domain', value='asana.com' placeholder='Domain')
         input(type='text', name='first_name', value='Dustin' placeholder='First Name')
         input(type='text', name='last_name', value='Moskovitz' placeholder='Last Name')
@@ -16,7 +16,7 @@ block content
         tr
             th Domain
             th URI
-            th Extracted on
+            th Extracted On
 
     script(type="text/javascript").
         var service = 'https://api.hunter.io/v2/';
@@ -45,6 +45,73 @@ block content
                                     '<td>' + item.extracted_on + '</td>' +
                                     '<td>' + item.uri + '</td>' +
                                     '</tr>';
+                        });
+                        $('#location tr').not('tr:first').remove();
+                        $('#location tr:first').after(trHTML);
+                    }
+                });
+                return false;
+            });
+        });
+block content
+    h1= title
+    form.ajaxform(action='domain-search', method='GET')
+        input(type='hidden', name='api_key', value='8221dcc6783e149736df1c6448bdf1f114a844ee')
+        input(type='text', name='domain', value='whalerockindustries.com' placeholder='Domain')
+        input(type='text', name='company', value='Whalerock Industries' placeholder='Company')
+        input(type='text', name='type', value='personal' placeholder='Type')
+
+     p##value Email;
+     p#confidence Score;
+
+     table#location(border='1')
+         tr
+            th Value
+            th Type
+            th Confidence
+            th Domain
+            th URI
+            th Extracted On
+
+    script(type="text/javascript").
+        var service = 'https://api.hunter.io/v2/';
+        var dd = '/fetch/';
+        function logResults(json) {
+            console.log(json);
+        }
+        $(document).ready(function () {
+            jQuery.support.cors = true;
+            jQuery('.ajaxform').submit(function () {
+                $.ajax({
+                    url: dd + service + $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        console.log(response); // server response
+                        var data = response.data.data;
+                        var domain = data.domain || "domain not found";
+                        var email = data.emails.value || "Cpulnd\'t Say"
+                        var confidence = data.emails.confidence || "Not Known";
+                        var webmail = data.webmail || "Couldn\'t Say";
+                        var pattern = data.pattern || "Pattern not detected";
+                        var emails = data.emails || [];
+                        $('#email').html(value);
+                        $('#confidence').html(confidence);
+                        var trHTML = '';
+                        $.each(emails, function (d, domains) {
+                            trHTML += '<tr>' +
+                                    '<td>' + domains.value + '</td>' +
+                                    '<td>' + domains.type + '</td>' +
+                                    '<td>' + domains.confidence + '</td>' +
+                                    '</tr>';
+                        var tr2HTML = '';
+                        $.each(emails.sources, function (s, sources){
+                            tr2HTML += '<tr>' +
+                                          '<td>' + sources.domain +  '</td>' +
+                                           '<td>'</td>'
+                        $.each(emails.sources, function (s, sources){
+                            trHTML += '<tr>' +
+                                       '<td>' + '</td>'
+                        })
                         });
                         $('#location tr').not('tr:first').remove();
                         $('#location tr:first').after(trHTML);
